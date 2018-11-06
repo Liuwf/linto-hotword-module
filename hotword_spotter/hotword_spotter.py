@@ -21,13 +21,11 @@ class HotwordSpotter:
     def __init__(self, config: configparser.ConfigParser):
         """Initialize audio provider, engines and MQTT message handling.
 
-
         Keyword arguments:
-        args -- Executable parameter
         conf -- Configuration file parameters
         """
         self.config = config['PARAMS']
-        self.engine = PreciseEngine('precise-engine/precise-engine', FILE_PATH + self.config['model_path'])
+        self.engine = PreciseEngine(FILE_PATH + 'precise-engine/precise-engine', FILE_PATH + self.config['model_path'])
         self.runner = PreciseRunner(self.engine, on_activation=self._on_activation)
 
         #MQTT broker client
@@ -63,7 +61,6 @@ class HotwordSpotter:
     def _on_broker_connect(self, client, userdata, flags, rc):
         logging.info("Succefully connected to broker")
 
-    
     def _on_activation(self):
         msg = dict()
         msg['on'] =  datetime.datetime.now().isoformat()

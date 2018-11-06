@@ -1,0 +1,3 @@
+recursive-include hotword_spotter/model/ *
+recursive-include hotword_spotter/precise-engine/ *
+include hotword_spotter/config.conf
