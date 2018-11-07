@@ -15,7 +15,6 @@ setup(
         'pyalsaaudio',
         'paho-mqtt'
     ],
-    package_data={},
     author="Rudy Baraglia",
     author_email="baraglia.rudy@gmail.com",
     description="linto_hotword is the hotword spotter for the LinTo device",

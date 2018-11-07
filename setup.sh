@@ -8,6 +8,15 @@ if [ $ARCH != "armv7l" ] && [ $ARCH != "x86_64" ]
     exit
 fi
 echo "Setup for $ARCH"
+echo "Cleaning..."
+if [ -d 'build' ] 
+    then
+        sudo rm -Rf build
+    fi
+if [ -d 'dist' ] 
+    then
+        sudo rm -Rf dist
+    fi
 echo "Move into hotword_spotter/"
 cd hotword_spotter/
 tar_name="precise-engine_0.2.0_$ARCH.tar.gz"
