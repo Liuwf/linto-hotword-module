@@ -25,7 +25,7 @@ class HotwordSpotter:
         conf -- Configuration file parameters
         """
         self.config = config['PARAMS']
-        self.engine = PreciseEngine(FILE_PATH + 'precise-engine/precise-engine', FILE_PATH + self.config['model_path'])
+        self.engine = PreciseEngine('/usr/local/lib/precise-engine/precise-engine', FILE_PATH + self.config['model_path'])
         self.runner = PreciseRunner(self.engine, on_activation=self._on_activation)
 
         #MQTT broker client

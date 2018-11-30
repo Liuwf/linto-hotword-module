@@ -30,6 +30,8 @@ if [ -d 'precise-engine' ]
     fi
 echo "Extracting archive"
 tar -zxvf $tar_name
+echo "Moving inference engine to /usr/local/lib"
+sudo mv -r precise-engine /usr/local/lib/
 echo "Removing archive"
 rm $tar_name
 
@@ -38,10 +40,3 @@ cd $ROOT/hotword_spotter/model/
 wget "https://github.com/linto-ai/linto-models/raw/master/hotword-model/linto_64.zip"
 unzip "linto_64.zip" -d .
 rm "linto_64.zip"
-
-echo "Installing dependencies"
-sudo apt-get install python3 python3-pip 
-
-echo "Running setup.py"
-cd $ROOT
-sudo pip3 install .
