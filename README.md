@@ -20,7 +20,7 @@ The script does several things:
 ## Usage
 To launch the module simply use the bin created during the setup:
 ```shell
-linto_hotword
+linto_hotword model_path.pb
 ```
 The spotter will send a message on the local MQTT broker each time the hotword is spotted.
 Topics and MQTT parameter cannot be changed after instalation for now (On it !)

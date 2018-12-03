@@ -18,15 +18,16 @@ import tenacity
 
 FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 class HotwordSpotter:
-    def __init__(self, config: configparser.ConfigParser):
+    def __init__(self, config: configparser.ConfigParser, args):
         """Initialize audio provider, engines and MQTT message handling.
 
         Keyword arguments:
         conf -- Configuration file parameters
         """
-        self.config = config['PARAMS']
-        self.engine = PreciseEngine('/usr/local/lib/precise-engine/precise-engine', FILE_PATH + self.config['model_path'])
-        self.runner = PreciseRunner(self.engine, on_activation=self._on_activation)
+        self.config = config['DEFAULT']
+        assert 0.0 <= float(args.sensitivity) <= 1.0, "Sensitivity must be between 0.0 and 1.0"
+        self.engine = PreciseEngine(args.engine_path, args.model_path)
+        self.runner = PreciseRunner(self.engine, on_activation=self._on_activation, on_prediction=self._on_first_prediction, sensitivity=float(args.sensitivity))
 
         #MQTT broker client
         self.broker = self._broker_connect()
@@ -68,15 +69,27 @@ class HotwordSpotter:
         payload = json.dumps(msg)
         self.broker.publish(self.config['wuw_pub_topic'], payload)
         logging.debug("Published message '{}' on topic {}".format(msg, payload))
+    
+    def _on_first_prediction(self, prob):
+        self.broker.publish('hotword/ready', '{}')
+        self.runner.on_prediction=lambda x:None
 
 def main():
     logging.basicConfig(level=logging.DEBUG, format="%(levelname)8s %(asctime)s [Spotter] %(message)s ")
-
+    
     # Read default config from file
     config = configparser.ConfigParser()
-    print(FILE_PATH + "config.conf")
     config.read(FILE_PATH + "config.conf")
-    runner = HotwordSpotter(config)
+
+    parser = argparse.ArgumentParser(description='Hotword module for LinTo.')
+    parser.add_argument('model_path', help='MQTT broker port')
+    parser.add_argument('--engine_path', dest='engine_path', default=config['DEFAULT']['engine_path'], help='Precise engine path')
+    parser.add_argument('--sensitivity', '-s', dest='sensitivity', default=config['DEFAULT']['sensitivity'], type=float, help="Hotwork sensitivity [0.0-1.0]")
+    args = parser.parse_args()
+    if not os.path.isfile(args.engine_path):
+        logging.error("Could not find engine at {}".format(args.engine_path))
+        exit()
+    runner = HotwordSpotter(config, args)
     runner.run()
 
 if __name__ == '__main__':
